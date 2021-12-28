@@ -1,0 +1,14 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: nginx-tls
+  namespace: nginx
+spec:
+  host: nginx.nginx.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: MUTUAL
+      credentialName: ingressgateway-client-certs
+      # clientCertificate: /etc/istio/ingressgateway-certs/tls.crt
+      # privateKey: /etc/istio/ingressgateway-certs/tls.key
+      

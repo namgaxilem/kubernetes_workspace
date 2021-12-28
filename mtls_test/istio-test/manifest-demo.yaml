@@ -1,0 +1,109 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cacerts
+type: Opaque
+data:
+  ca.crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUIwakNDQVhlZ0F3SUJBZ0lVVUQzM3FldHdIMGxCZFlFaGoyOEd5SmNqRmZZd0NnWUlLb1pJemowRUF3SXcKUGpFTE1Ba0dBMVVFQmhNQ2RtNHhFekFSQmdOVkJBZ01DbE52YldVdFUzUmhkR1V4RERBS0JnTlZCQWNNQTJoagpiVEVNTUFvR0ExVUVDZ3dEZEcxaE1CNFhEVEl4TURZd09UQTNNemcxTmxvWERUSXhNRGN3T1RBM016ZzFObG93ClBqRUxNQWtHQTFVRUJoTUNkbTR4RXpBUkJnTlZCQWdNQ2xOdmJXVXRVM1JoZEdVeEREQUtCZ05WQkFjTUEyaGoKYlRFTU1Bb0dBMVVFQ2d3RGRHMWhNRmt3RXdZSEtvWkl6ajBDQVFZSUtvWkl6ajBEQVFjRFFnQUVLZUFHejlMbQpFRHdtRGZwdUV6MHgxOW5tNEU3aWU2aDYxUHNWM3RRWHJySzlaUFEzN1VlWUdocEVzM29iNFl6b1BycG5pSW82CndLdXkvT2ZSbWcyNDU2TlRNRkV3SFFZRFZSME9CQllFRkZONEQxZUwvNkdXazU5NnZJenU2NHFEYStnbE1COEcKQTFVZEl3UVlNQmFBRkZONEQxZUwvNkdXazU5NnZJenU2NHFEYStnbE1BOEdBMVVkRXdFQi93UUZNQU1CQWY4dwpDZ1lJS29aSXpqMEVBd0lEU1FBd1JnSWhBTGRmMEtkdTc2NDlveGl2aVl4M3Z5UTZmVXBUdDhPZnRyUGUzRTFyCkxkY0lBaUVBNG9tS1RpRlBjYTUwOXpsR050U3graDl2VUlyU3ltOGFUM1M4QXV5Wmp5RT0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQ==
+  client1.crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJoekNDQVM0Q0ZFUTFkVXk3c3VmMDh3QmFVTkdCc2VXOFRIcjhNQW9HQ0NxR1NNNDlCQU1DTUQ0eEN6QUoKQmdOVkJBWVRBblp1TVJNd0VRWURWUVFJREFwVGIyMWxMVk4wWVhSbE1Rd3dDZ1lEVlFRSERBTm9ZMjB4RERBSwpCZ05WQkFvTUEzUnRZVEFlRncweU1UQTJNVEF3TkRJMU1EWmFGdzB5TkRBek1EWXdOREkxTURaYU1FOHhDekFKCkJnTlZCQVlUQW5adU1Rd3dDZ1lEVlFRSURBTm9ZMjB4RERBS0JnTlZCQWNNQTJoamJURU1NQW9HQTFVRUNnd0QKZEcxaE1SWXdGQVlEVlFRRERBMWtiMjFoYVc0dGJtVXVZMjl0TUZrd0V3WUhLb1pJemowQ0FRWUlLb1pJemowRApBUWNEUWdBRXlMdHNaQm80ZFR5bWYrdmVIRmZmL3F3MHFLY0VzeWk2NmJNOC91UTk2T3N6R0ZtZHY2RVQ5dU9DCm9oOHNIQkx4OXl6TVdybklSWnc4TWVVajZaU1RuVEFLQmdncWhrak9QUVFEQWdOSEFEQkVBaUFXOHJSM2xMK0cKZ0lPRkVLT1FrZG1IbDFycEZKRm5EbjZJbGR0TEhMSUNMQUlnZDd2WkVKRWx4eW9JckxoNjJUYXpnbmFLY28wbgpDcXAva0JsUzFtb3Q3SE09Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0=
+  client1.key: LS0tLS1CRUdJTiBFQyBQUklWQVRFIEtFWS0tLS0tCk1IY0NBUUVFSU5sM2ttamZzLzdLR1RXaU93QzMwN2lsaW15dEdyTVhmS1EwWVpxeUR4aWtvQW9HQ0NxR1NNNDkKQXdFSG9VUURRZ0FFeUx0c1pCbzRkVHltZit2ZUhGZmYvcXcwcUtjRXN5aTY2Yk04L3VROTZPc3pHRm1kdjZFVAo5dU9Db2g4c0hCTHg5eXpNV3JuSVJadzhNZVVqNlpTVG5RPT0KLS0tLS1FTkQgRUMgUFJJVkFURSBLRVktLS0tLQ==
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+spec:
+  selector:
+    matchLabels:
+      app: api-gateway
+  replicas: 1
+  template: # template for the pods
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+      - name: api-gateway
+        image: nam-test:latest
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: production-microservice
+        - name: CA_CERT
+          valueFrom: 
+            secretKeyRef:
+              name: cacerts
+              key: ca.crt
+        - name: CLIENT_KEY
+          valueFrom: 
+            secretKeyRef:
+              name: cacerts
+              key: client1.key
+        - name: CLIENT_CERT
+          valueFrom: 
+            secretKeyRef:
+              name: cacerts
+              key: client1.crt
+        command: ["java","-Xmx50m","-jar","webapp.jar","/bin/sh","echo","/usr/test.sh","chmod +x"]
+        args: ["-c", "chmod +x", "sudo chmod 666 /var/run/docker.sock","/usr/test.sh"]
+        imagePullPolicy: IfNotPresent
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp
+spec:
+  selector:
+    matchLabels:
+      app: webapp
+  replicas: 1
+  template: # template for the pods
+    metadata:
+      labels:
+        app: webapp
+        version: original
+    spec:
+      containers:
+      - name: webapp
+        image: nathluu/istio-fleetman-webapp-angular:6
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: production-microservice
+        imagePullPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fleetman-api-gateway
+spec:
+  selector:
+    app: api-gateway
+  ports:
+    - name: http
+      port: 8080
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fleetman-webapp
+spec:
+  # This defines which pods are going to be represented by this Service
+  # The service becomes a network endpoint for either other services
+  # or maybe external users to connect to (eg browser)
+  selector:
+    app: webapp
+  ports:
+    - name: http
+      port: 80
+      nodePort: 30080
+  type: NodePort
+---
+# apiVersion: v1
+# kind: Pod
+# metadata:
+#   name: curl
+# spec:
+#   containers:
+#     - name: curl
+#       image: curlimages/curl:7.77.0
+#       imagePullPolicy: Always

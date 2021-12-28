@@ -1,0 +1,48 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/auth-url: "http://localhost/oauth2/auth"
+    nginx.ingress.kubernetes.io/auth-signin: "http://localhost/oauth2/start"
+    nginx.ingress.kubernetes.io/auth-response-headers: X-Auth-Request-User,X-Auth-Request-Email
+    nginx.ingress.kubernetes.io/client-body-buffer-size: "1000"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+  name: external-auth-oauth2
+  # namespace: kube-system
+spec:
+  rules:
+    - host: localhost
+      http:
+        paths:
+          - backend:
+              service:
+                name: fleetman-webapp
+                port: 
+                  number: 80
+            path: /
+            pathType: Prefix
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  name: oauth-proxy
+  # namespace: kube-system
+spec:
+  rules:
+    - host: localhost
+      http:
+        paths:
+          - backend:
+              service:
+                name: oauth2-proxy
+                port: 
+                  number: 4180
+            path: /oauth2
+            pathType: Prefix
+  # tls:
+  # - hosts:
+  #   - __INGRESS_HOST__
+  #   secretName: __INGRESS_SECRET__

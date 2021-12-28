@@ -1,0 +1,45 @@
+# apiVersion: cert-manager.io/v1alpha2
+# kind: Issuer
+# metadata:
+#   name: vault-issuer
+# spec:
+#   vault:
+#     server: http://vault.vault:8200
+#     path: pki/sign/example-dot-com
+#     auth:
+#       kubernetes:
+#         mountPath: /v1/auth/kubernetes
+#         role: issuer
+#         secretRef:
+#           name: issuer-token-fpz9t
+#           key: token
+# ---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: nginx-server-certs
+  # namespace: nginx
+spec:
+  secretName: nginx-server-certs
+  commonName: nginx.nginx.svc.cluster.local.example.com
+  dnsNames:
+  - nginx.nginx.svc.cluster.local.example.com
+  issuerRef:
+    name: vault-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
+# ---
+# apiVersion: cert-manager.io/v1
+# kind: Certificate
+# metadata:
+#   name: ingressgateway-client-certs
+#   namespace: istio-system
+# spec:
+#   secretName: ingressgateway-client-certs
+#   commonName: nginx.nginx.svc.cluster.local.example.com
+#   dnsNames:
+#   - nginx.nginx.svc.cluster.local.example.com
+#   issuerRef:
+#     name: vault-issuer
+#     kind: ClusterIssuer
+#     group: cert-manager.io

@@ -1,0 +1,80 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nifi-toolkit
+spec:
+  # initContainers:
+  # - name: init-myservice
+  #   image: nifi-toolkit-with-python:latest
+  #   imagePullPolicy: IfNotPresent
+  #   env:
+  #     - name: TLS_STORE_PASSWORD
+  #       valueFrom:
+  #         secretKeyRef:
+  #           name: keystore-password
+  #           key: password
+  #   command: 
+  #     - 'sh'
+  #     - '-c'
+  #     - |
+  #       echo "baseUrl=https://localhost:8443/nifi/
+  #             keystore=/etc/tls-store/keystore.p12
+  #             keystoreType=PKCS12
+  #             keystorePasswd=$(TLS_STORE_PASSWORD)
+  #             keyPasswd=
+  #             truststore=/etc/tls-store/truststore.p12
+  #             truststoreType=PKCS12
+  #             truststorePasswd=${TLS_STORE_PASSWORD}
+  #             proxiedEntity=" > /etc/data/nifi.properties
+  #   volumeMounts:
+  #   - name: data
+  #     mountPath: /etc/data/
+  containers:
+  - name: nifi-toolkit
+    image: nifi-toolkit-with-python:latest
+    imagePullPolicy: IfNotPresent
+    # command: 
+    # - "/bin/sleep"
+    # - "10000"
+    env:
+      - name: TLS_STORE_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: keystore-password
+            key: password
+    command:
+    - 'sh'
+    - '-c'
+    args:
+    - |
+      tempfile=$(mktemp)
+      echo "baseUrl=https://localhost:8443/nifi/
+              keystore=/etc/tls-store/keystore.p12
+              keystoreType=PKCS12
+              keystorePasswd=$(TLS_STORE_PASSWORD)
+              keyPasswd=
+              truststore=/etc/tls-store/truststore.p12
+              truststoreType=PKCS12
+              truststorePasswd=${TLS_STORE_PASSWORD}
+              proxiedEntity=" > ${tempfile}
+      /bin/sleep 10000
+    volumeMounts:
+    - name: tls-store
+      mountPath: /etc/tls-store/
+    - name: user-permission
+      mountPath: /etc/policy/
+    # - name: data
+    #   mountPath: /etc/data/
+  volumes:
+  - name: tls-store
+    secret:
+      secretName: nifi-toolkit
+  - name: user-permission
+    configMap:
+      name: user-permission
+  # - name: data
+  #   emptyDir: {}
+
+# kubectl create configmap user-permission --from-file=user-permission.yaml=user-permission.yaml
+# kubectl create secret generic nifi-toolkit --from-literal=keystore.p12=asd --from-literal=truststore.p12=asd
+# kubectl create secret generic keystore-password --from-literal=password=asd

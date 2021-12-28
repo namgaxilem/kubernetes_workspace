@@ -1,0 +1,84 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: ingress-gateway-configuration
+spec:
+  selector:
+    istio: ingressgateway # use Istio default gateway implementation
+  servers:
+  - port:
+      number: 443
+      name: https
+      protocol: HTTPS
+    hosts:
+    - "myapp.cluster.example.com"   # Domain name of the external website
+    tls:
+      mode: SIMPLE
+      credentialName: httpbin-credential # must be the same as secret
+---
+kind: VirtualService
+apiVersion: networking.istio.io/v1alpha3
+metadata:
+  name: fleetman-webapp
+spec:
+  hosts:      # which incoming host are we applying the proxy rules to???
+    - "myapp.cluster.example.com" # Copy the value in the gateway hosts - usually a Domain Name
+  gateways:
+    - ingress-gateway-configuration
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        port:
+          number: 80
+        host: my-nginx.default.svc.cluster.local
+---
+# apiVersion: networking.istio.io/v1beta1
+# kind: Gateway
+# metadata:
+#   labels:
+#     app.kubernetes.io/name: oauth2-proxy
+#   name: oauth2-proxy
+#   # namespace: myapp
+# spec:
+#   selector:
+#     istio: ingressgateway
+#   servers:
+#   - hosts:
+#     # Same host as the one in the VirtualService, the full
+#     # name for oauth2-proxy.
+#     - oauth.cluster.example.com
+#     port:
+#       # Again, this must be unique across all ports named in
+#       # the Istio ingress.
+#       name: https-oauth-cluster-example-com
+#       number: 443
+#       protocol: HTTPS
+#     tls:
+#       mode: SIMPLE
+#       credentialName: httpbin-credential # must be the same as secret1
+# ---
+# apiVersion: networking.istio.io/v1beta1
+# kind: VirtualService
+# metadata:
+#   labels:
+#     app.kubernetes.io/name: oauth2-proxy
+#   name: oauth2-proxy
+#   # namespace: myapp
+# spec:
+#   gateways:
+#   # We'll deploy this gateway in a moment.
+#   - oauth2-proxy
+#   hosts:
+#   # Full host name of the oauth2-proxy.
+#   - oauth.cluster.example.com
+#   http:
+#   - route:
+#     - destination:
+#         # This should line up with the Service that the
+#         # oauth2-proxy Helm chart deployed.
+#         host: oauth2-proxy
+#         port:
+#           number: 4180

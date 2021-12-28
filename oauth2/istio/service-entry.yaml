@@ -1,0 +1,16 @@
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: azure-istio-egress
+  namespace: istio-system
+spec:
+  hosts:
+  - '*.microsoft.com'
+  - '*.microsoftonline.com'
+  - '*.windows.net'
+  location: MESH_EXTERNAL
+  ports:
+  - name: https
+    number: 443
+    protocol: HTTPS
+  resolution: NONE

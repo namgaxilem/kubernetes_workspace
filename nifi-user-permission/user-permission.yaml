@@ -1,0 +1,23 @@
+userPolicyList:
+- resource: flow
+  permission: "read"
+  userGroupNameList:
+  - "sad"
+  userGroupIdList:
+  - "asd654"
+  userNameList:
+  - "Qvo@humana.com"
+  - "TLuu@humana.com"
+  userIdList:
+  - ""
+- resource: "processors"
+  permission: "write"
+  userGroupNameList:
+  - "dev"
+  - "test"
+  userGroupIdList:
+  - ""
+  userNameList:
+  - "Qvo@humana.com"
+  userIdList:
+  - ""

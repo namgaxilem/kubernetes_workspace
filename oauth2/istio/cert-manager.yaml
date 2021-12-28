@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1beta1
+kind: Certificate
+metadata:
+  name: tls-myapp-production
+  namespace: istio-system
+spec:
+  commonName: '*.cluster.example.com'
+  dnsNames:
+  - '*.cluster.example.com'
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt-production
+  secretName: tls-myapp-production

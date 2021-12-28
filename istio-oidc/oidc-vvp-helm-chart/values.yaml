@@ -1,0 +1,8 @@
+certManager:
+  enabled: true
+  certSecretNames:
+  - nifi-sit1-0
+  - nifi-sit1-1
+  - nifi-sit1-2
+  registryCertSecretNames:
+  - nifi-sit1-registry-0654

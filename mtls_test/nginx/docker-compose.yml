@@ -1,0 +1,7 @@
+nginx:
+  image: "nginx:latest"
+  ports:
+    - 11088:443
+  volumes:
+    - ./:/etc/nginx/conf.d
+    - ./nginx.conf:/etc/nginx/nginx.conf

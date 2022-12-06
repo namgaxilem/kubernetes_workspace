@@ -1,0 +1,100 @@
+# istioctl install
+# kubectl create secret tls ingressgateway-tls-secret --cert=app.tmanet.com.crt --key=app.tmanet.com.key -n istio-system
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: default
+  labels:
+    istio-injection: enabled
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dhp-eventproc-portal
+spec:
+  selector:
+    app: dhp-eventproc-portal
+  ports:
+  - name: https
+    port: 443
+    targetPort: 8080
+    protocol: TCP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dhp-eventproc-portal
+spec:
+  selector:
+    matchLabels:
+      app: dhp-eventproc-portal
+  template:
+    metadata:
+      labels:
+        app: dhp-eventproc-portal
+    spec:
+      containers:
+      - name: dhp-eventproc-portal
+        image: dhp-eventproc-portal:latest
+        ports:
+        - containerPort: 8080
+        imagePullPolicy: IfNotPresent
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: dhp-eventproc-portal-vs
+spec:
+  hosts:
+  - app.tmanet.com
+  gateways:
+  - istio-system/nginx-gw
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: dhp-eventproc-portal
+            port:
+              number: 443
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: dhp-eventproc-portal-dr
+spec:
+  host: dhp-eventproc-portal.default.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: nginx-gw
+  namespace: istio-system
+spec:
+  selector:
+    app: istio-ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - app.tmanet.com
+    tls:
+      httpsRedirect: true
+  - port:
+      number: 443
+      name: https
+      protocol: HTTPS
+    hosts:
+    - app.tmanet.com
+    tls:
+      credentialName: ingressgateway-tls-secret
+      mode: SIMPLE
+
+      

@@ -1,56 +1,79 @@
-# Set alias for kubectl commands
+# Hands on for kubectl in powershell
+
+## 1. Get current ps1 file location
+echo $profile
+
+## 2. Store below code in that ps1 file
+example: C:\Users\NAM\OneDrive\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1
+
+## 3. Set alias for kubectl commands
 ```
 Set-Alias -Name k -Value kubectl
-```
 
-```
-function GetPods([string]$namespace=”default”)
-{
- kubectl get pods -n $namespace
+## pods
+function GetPods([string]$namespace = "default") {
+    kubectl get pods -n $namespace
 }
 Set-Alias -Name kgp -Value GetPods
 
-function GetPodsWide([string]$namespace=”default”)
-{
- kubectl get pods -n $namespace -o wide
+function GetPodsWide([string]$namespace = "default") {
+    kubectl get pods -n $namespace -o wide
 }
 Set-Alias -Name kgpw -Value GetPodsWide
 
-function GetAll([string]$namespace=”default”)
-{
- kubectl get all -n $namespace
+function GetAll([string]$namespace = "default") {
+    kubectl get all -n $namespace
 }
 Set-Alias -Name kgall -Value GetAll
 
-function GetNodes()
-{
- kubectl get nodes -o wide
-}
-Set-Alias -Name kgn -Value GetNodes
-
-function DescribePod([string]$container, [string]$namespace=”default”)
-{
- kubectl describe po $container -n $namespace
+function DescribePod([string]$podname, [string]$namespace = "default") {
+    kubectl describe po $podname -n $namespace
 }
 Set-Alias -Name kdp -Value DescribePod
 
-function GetLogs([string]$container, [string]$namespace=”default”)
-{
- kubectl logs pod/$container -n $namespace
+function LogsPod([string]$podname, [string]$namespace = "default") {
+    kubectl logs pod/$podname -n $namespace
 }
-Set-Alias -Name klp -Value GetLogs
+Set-Alias -Name klp -Value LogsPod
 
-function ApplyYaml([string]$filenamer, [string]$namespace=”default”)
-{
- kubectl apply -f $filename -n $namespace
-}
-Set-Alias -Name kaf -Value ApplyYaml
-
-function ExecContainerShell([string]$container, [string]$namespace=”default”)
-{
- kubectl exec -it $container -n $namespace — sh
+function ExecContainerShell([string]$podname, [string]$namespace = "default") {
+    kubectl exec -it po/$podname -n $namespace -- sh
 }
 Set-Alias -Name kexec -Value ExecContainerShell
+
+## namespaces
+function GetNamespaces() {
+    kubectl get namespaces
+}
+Set-Alias -Name kgns -Value GetNamespaces
+
+function SwitchDefaultNamespace([string]$namespace) {
+    kubectl config set-context --current --namespace=$namespace
+}
+Set-Alias -Name kswichns -Value SwitchDefaultNamespace
+
+## nodes
+function GetNodes() {
+    kubectl get nodes -o wide
+}
+Set-Alias -Name kgnodes -Value GetNodes
+
+## Context
+function GetContext() {
+    kubectl config get-contexts
+}
+Set-Alias -Name kl -Value GetContext
+
+function SwitchContext([string]$context_name) {
+    kubectl config use-context $context_name
+}
+Set-Alias -Name kswitch -Value SwitchContext
+
+## Others
+function ApplyYaml([string]$filename, [string]$namespace = "default") {
+    kubectl apply -f $filename -n $namespace
+}
+Set-Alias -Name kaf -Value ApplyYaml
 ```
 
 # Create YAML from kubectl commands 
